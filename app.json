@@ -1,0 +1,29 @@
+{
+  "name": "AutoCaptionBot Pro",
+  "description": "Professional Telegram auto-caption bot with multi-FSub, broadcast tools and MongoDB backend.",
+  "keywords": ["telegram", "bot", "pyrofork", "auto-caption", "mongodb"],
+  "repository": "https://github.com/yourusername/AutoCaptionBotPro",
+  "logo": "https://telegram.org/img/t_logo.png",
+  "success_url": "https://t.me/",
+  "env": {
+    "API_ID": { "description": "Get from my.telegram.org", "required": true },
+    "API_HASH": { "description": "Get from my.telegram.org", "required": true },
+    "BOT_TOKEN": { "description": "Get from @BotFather", "required": true },
+    "MONGO_URI": { "description": "MongoDB Atlas connection string", "required": true },
+    "DB_NAME": { "description": "Database name", "value": "AutoCaptionBotPro", "required": false },
+    "OWNER_ID": { "description": "Your numeric Telegram user ID", "required": true },
+    "SUDO_USERS": { "description": "Space separated list of sudo user IDs", "required": false },
+    "LOG_CHANNEL": { "description": "Channel ID for bot logs (bot must be admin)", "required": false },
+    "FSUB_CHANNELS": { "description": "Comma separated force-sub channel IDs", "required": false },
+    "FSUB_JOIN_REQUEST": { "description": "True/False - use join-request mode", "value": "True", "required": false },
+    "DEFAULT_CAPTION": { "description": "Default caption template", "required": false },
+    "TIMEZONE": { "description": "Timezone", "value": "Asia/Dhaka", "required": false }
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "buildpacks": [{ "url": "heroku/python" }]
+}

@@ -1,87 +1,49 @@
-import asyncio
 import logging
+import os
+import sys
+from collections import defaultdict
+from logging.handlers import RotatingFileHandler
 
-from pyrogram import Client
+from Vivian.Function.msg_utils import MakeButtons
 
-from bot.config import Config, validate_config
-from plugins import register_all
+"""Some Constants"""
+UPLOAD_AS_DOC = {}
+UPLOAD_DESTINATION = {}
 
+FINISHED_PROGRESS_STR = os.environ.get("FINISHED_PROGRESS_STR", "█")
+UN_FINISHED_PROGRESS_STR = os.environ.get("UN_FINISHED_PROGRESS_STR", "░")
+EDIT_SLEEP_TIME_OUT = 10
+gDict = defaultdict(lambda: [])
+queueDB = {}
+formatDB = {}
+replyDB = {}
+
+VIDEO_EXTENSIONS = ["mkv", "mp4", "webm", "ts", "wav", "mov"]
+AUDIO_EXTENSIONS = ["aac", "ac3", "eac3", "m4a", "mka", "thd", "dts", "mp3"]
+SUBTITLE_EXTENSIONS = ["srt", "ass", "mka", "mks"]
+
+w = open("mergebotlog.txt", "w")
+w.truncate(0)
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+    handlers=[
+        RotatingFileHandler(
+            "mergebotlog.txt",
+            maxBytes=50000000,
+            backupCount=10),
+        logging.StreamHandler(
+            sys.stdout),
+    ],
 )
 logging.getLogger("pyrogram").setLevel(logging.WARNING)
-logger = logging.getLogger("AutoCaptionBotPro")
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("PIL").setLevel(logging.WARNING)
 
-
-async def start_health_server():
-    """Tiny HTTP server so PaaS platforms (Render/Railway/Koyeb) see an open port."""
-    try:
-        from aiohttp import web
-
-        async def health(_request):
-            return web.Response(text="AutoCaptionBot Pro is running.")
-
-        webapp = web.Application()
-        webapp.router.add_get("/", health)
-        webapp.router.add_get("/health", health)
-        runner = web.AppRunner(webapp)
-        await runner.setup()
-        site = web.TCPSite(runner, "0.0.0.0", Config.PORT)
-        await site.start()
-        logger.info(f"Health-check server listening on port {Config.PORT}")
-    except Exception as e:
-        logger.warning(f"Health server not started: {e}")
-
-
-def main():
-    validate_config()
-
-    app = Client(
-        name="AutoCaptionBotPro",
-        api_id=Config.API_ID,
-        api_hash=Config.API_HASH,
-        bot_token=Config.BOT_TOKEN,
-        in_memory=True,
-    )
-
-    register_all(app)
-
-    async def runner():
-        await start_health_server()
-        await app.start()
-        me = await app.get_me()
-        app.bot_id = me.id
-        app.bot_username = me.username
-        logger.info(f"Bot started as @{me.username}")
-
-        from utils.telegram_log_handler import attach as attach_error_log
-
-        attach_error_log(app, Config.LOG_CHANNEL)
-
-        if Config.LOG_CHANNEL:
-            try:
-                await app.send_message(
-                    Config.LOG_CHANNEL,
-                    f"✅ **{Config.BOT_NAME} started.**\n@{me.username} is now online.",
-                )
-            except Exception:
-                pass
-        await asyncio.Event().wait()
-
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(runner())
-    except KeyboardInterrupt:
-        logger.info("Shutting down...")
-    finally:
-        try:
-            from bot.caption_engine import close_tmdb_session
-
-            loop.run_until_complete(close_tmdb_session())
-        except Exception:
-            pass
-
-
-if __name__ == "__main__":
-    main()
+LOGGER = logging.getLogger(__name__)
+BROADCAST_MSG = """
+**Total: {}
+Done: {}**
+"""
+bMaker = MakeButtons()

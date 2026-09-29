@@ -1,5 +1,6 @@
-.env
 __pycache__/
-*.pyc
+mergebotlog.txt
 *.session
 *.session-journal
+.env
+*.session*

@@ -1,0 +1,23 @@
+# Koyeb deployment (Docker-based)
+# Deploy via: koyeb app init --docker . --env-file .env autocaptionbot-pro
+# or connect this repo in the Koyeb dashboard and select "Dockerfile" as build method.
+name: autocaptionbot-pro
+services:
+  - name: bot
+    type: worker
+    instance_type: nano
+    ports: []
+    routes: []
+    env:
+      - key: API_ID
+      - key: API_HASH
+      - key: BOT_TOKEN
+      - key: MONGO_URI
+      - key: DB_NAME
+        value: AutoCaptionBotPro
+      - key: OWNER_ID
+      - key: SUDO_USERS
+      - key: LOG_CHANNEL
+      - key: FSUB_CHANNELS
+      - key: FSUB_JOIN_REQUEST
+        value: "True"

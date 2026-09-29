@@ -1,0 +1,30 @@
+services:
+  - type: worker
+    name: autocaptionbot-pro
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python3 main.py"
+    envVars:
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: DB_NAME
+        value: AutoCaptionBotPro
+      - key: OWNER_ID
+        sync: false
+      - key: SUDO_USERS
+        sync: false
+      - key: LOG_CHANNEL
+        sync: false
+      - key: FSUB_CHANNELS
+        sync: false
+      - key: FSUB_JOIN_REQUEST
+        value: "True"
+      - key: PORT
+        value: "8080"

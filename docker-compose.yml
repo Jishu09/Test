@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: autocaptionbot_pro
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - ./thumbnails:/app/thumbnails
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo
+
+  # Optional local MongoDB — skip this service and use MongoDB Atlas instead if preferred.
+  mongo:
+    image: mongo:7
+    container_name: autocaptionbot_mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo_data:
